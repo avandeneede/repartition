@@ -68,10 +68,13 @@ Supprimez un profil via l'**icône corbeille rouge** dans la liste des profils (
 
 ### 6. Réinitialisation et démo
 
-- **Données → Charger les données de démo** : remplace toutes les données actuelles par un exemple de répartition (Loyer, Salaires, Fournitures, Marketing, Réserve).
-- **Données → Réinitialiser l'app** (rouge) : supprime tous les profils et clés, remet un profil vide.
+Deux actions en bas de la section **Données** pour repartir d'une base propre :
 
-Les deux actions demandent une confirmation avant d'effacer quoi que ce soit.
+- **Charger les données de démo** (étincelle) : remplace toutes les données actuelles par un exemple de répartition complet pour une entreprise — 5 000 € à répartir entre **Loyer** (1 800 € fixe), **Salaires** (40 % du total), **Fournitures** (300 € fixe), **Marketing** (200 € fixe) et **Réserve** (30 % du reste). Utile pour redécouvrir les fonctionnalités après avoir tout supprimé, ou montrer l'app à quelqu'un sans partir de zéro.
+
+- **Réinitialiser l'app** (rouge, icône rafraîchir) : supprime **tous les profils, toutes les clés et le montant**. L'app redémarre avec un seul profil vide nommé « Défaut ». La langue et la devise du profil sont conservées (celle de votre choix, pas remises à zéro).
+
+> Les deux actions demandent une confirmation avant d'effacer quoi que ce soit. Si vous voulez conserver vos données actuelles, utilisez d'abord **Exporter mes profils** juste au-dessus.
 
 ---
 
