@@ -80,22 +80,29 @@ Deux actions en bas de la section **Données** pour repartir d'une base propre :
 
 ## Exporter / Importer
 
-Les données vivent uniquement dans le navigateur de l'appareil. Pour sauvegarder ou transférer :
+Les données vivent uniquement dans le navigateur de l'appareil. L'export et l'import fonctionnent **par sélection** — vous choisissez quels profils inclure, et comment l'import se combine avec l'existant.
 
-### Exporter ses profils
+### Exporter un ou plusieurs profils
 
 1. Section **Données** → **Exporter mes profils**
-2. Un fichier `breakdown-YYYY-MM-DD.json` est téléchargé contenant tous vos profils, clés, devises et langue
-3. Sauvegardez-le (iCloud Drive, Dropbox, Google Drive, email…) ou envoyez-le vers un autre appareil via AirDrop
+2. Une feuille s'ouvre avec la liste de vos profils, tous cochés par défaut
+3. Décochez ceux que vous ne voulez pas exporter (ou gardez tout)
+4. Touchez **Exporter** — un fichier `breakdown-YYYY-MM-DD.json` est téléchargé avec uniquement les profils cochés
+
+C'est utile pour sauvegarder un seul profil, ou partager un profil avec un collègue sans exposer vos autres profils personnels.
 
 ### Importer sur un autre appareil
 
-1. Ouvrez l'app sur le nouvel appareil (ou un nouveau navigateur)
-2. Section **Données** → **Importer un fichier**
-3. Choisissez le fichier JSON exporté
-4. Confirmez — toutes les données actuelles sont remplacées par le contenu du fichier
+1. Section **Données** → **Importer un fichier**
+2. Choisissez le fichier JSON
+3. Une feuille affiche les profils contenus dans le fichier, tous cochés par défaut
+4. Décochez ceux que vous ne voulez pas importer
+5. Choisissez un **mode** :
+   - **Tout remplacer** : supprime vos données actuelles et les remplace par les profils cochés
+   - **Ajouter** : conserve vos profils existants et ajoute les nouveaux à côté (avec de nouveaux identifiants, donc aucun conflit possible — même si les noms sont identiques, les deux profils coexistent)
+6. Touchez **Importer**
 
-> ⚠️ L'import **remplace** toutes les données actuelles de l'app. Si vous voulez les conserver, exportez-les d'abord.
+> En mode **Ajouter**, vous pouvez importer plusieurs fichiers successivement pour fusionner des profils provenant de différentes sources (un collègue, un ancien appareil, une sauvegarde partielle).
 
 ---
 

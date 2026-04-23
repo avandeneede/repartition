@@ -216,6 +216,15 @@
   .muted { color: var(--muted); font-size: 13px; }
   .hide { display: none !important; }
   .check { color: var(--accent); font-size: 18px; font-weight: 600; width: 18px; text-align: center; }
+  .checkbox {
+    width: 24px; height: 24px; border-radius: 50%;
+    border: 1.5px solid var(--separator);
+    display: grid; place-items: center; flex-shrink: 0;
+    color: transparent; font-size: 14px; font-weight: 700;
+    transition: background .15s, border-color .15s, color .15s;
+  }
+  .checkbox.checked { background: var(--accent); border-color: var(--accent); color: white; }
+  .checkbox::before { content: '✓'; }
   .icon-btn {
     width: 36px; height: 36px; border-radius: 9px;
     background: transparent; border: none; cursor: pointer; padding: 0;
@@ -358,6 +367,34 @@
   <div class="group" id="currencyList"></div>
 </div></div>
 
+<div class="sheet-backdrop" id="exportSheet"><div class="sheet">
+  <div class="sheet-handle"></div>
+  <h2 id="exportSheetTitle">—</h2>
+  <p class="muted" id="exportSheetSub">—</p>
+  <div class="group" id="exportList"></div>
+  <div class="btn-row" style="margin-top:16px">
+    <button class="btn" type="button" id="exportSelectAll">—</button>
+    <button class="btn primary" type="button" id="exportConfirm" style="flex:2">—</button>
+  </div>
+</div></div>
+
+<div class="sheet-backdrop" id="importSheet"><div class="sheet">
+  <div class="sheet-handle"></div>
+  <h2 id="importSheetTitle">—</h2>
+  <p class="muted" id="importSheetSub">—</p>
+  <div class="group" id="importList"></div>
+  <div class="field-label" id="importModeLabel">—</div>
+  <div class="segmented" style="display:flex;width:100%">
+    <button type="button" id="importModeReplace" class="active" style="flex:1" data-mode="replace">—</button>
+    <button type="button" id="importModeAdd" style="flex:1" data-mode="add">—</button>
+  </div>
+  <div class="muted" id="importModeHint" style="margin-top:8px">—</div>
+  <div class="btn-row" style="margin-top:16px">
+    <button class="btn" type="button" id="importSelectAll">—</button>
+    <button class="btn primary" type="button" id="importConfirm" style="flex:2">—</button>
+  </div>
+</div></div>
+
 <div class="sheet-backdrop" id="dialogSheet"><div class="sheet">
   <div class="sheet-handle"></div>
   <h2 id="dialogTitle"></h2>
@@ -403,8 +440,19 @@
       dlgDeleteProfile: 'Delete "{name}"?', dlgDeleteProfileMsg: 'All keys in this profile will be lost.',
       dlgDelete: 'Delete', dlgRename: 'Rename profile',
       dlgNewProfile: 'New profile', dlgNewProfilePH: 'Profile name', dlgCreate: 'Create',
-      dlgImport: 'Import this file?', dlgImportMsg: 'All current data will be replaced.',
-      dlgImportBtn: 'Import', dlgImportFailed: 'Import failed',
+      dlgImportFailed: 'Import failed',
+      exportSheetTitle: 'Export profiles',
+      exportSheetSub: 'Select the profiles to include in the JSON file.',
+      importSheetTitle: 'Import profiles',
+      importSheetSub: 'Select which profiles from the file to import.',
+      selectAll: 'Select all',
+      deselectAll: 'Deselect all',
+      importModeLabel: 'Mode',
+      importModeReplace: 'Replace all',
+      importModeAdd: 'Add',
+      importModeReplaceHint: 'Deletes your current data and replaces it with the selected profiles.',
+      importModeAddHint: 'Adds the selected profiles alongside your existing ones (new ids, no conflicts).',
+      exportBtn: 'Export', importBtn: 'Import',
       guideGot: 'Got it',
       demoRowTitle: 'Load demo data',
       demoRowSub: 'Replace with a sample distribution',
@@ -436,12 +484,13 @@
         <h3>5. Language and currency</h3>
         <p>Language auto-detects from your device (English, French, Dutch — French if unsupported). Change via Data → Language. Currency is per-profile — tap the symbol next to the amount.</p>
         <h3>Export / Import</h3>
-        <ol>
-          <li>Data → <strong>Export my profiles</strong> → a <code>repartition-YYYY-MM-DD.json</code> file is downloaded</li>
-          <li>Send it to another device (iCloud Drive, email, AirDrop)</li>
-          <li>On the other device, Data → <strong>Import a file</strong> → pick the JSON</li>
-        </ol>
-        <div class="callout">⚠️ Importing <strong>replaces</strong> all current data. Export first to keep it.</div>
+        <p><strong>Export</strong>: Data → <strong>Export my profiles</strong> opens a picker where you check which profiles to include (all by default). Confirm to download a <code>breakdown-YYYY-MM-DD.json</code> file. Useful for backing up a single profile, or sharing one with a colleague without exposing others.</p>
+        <p><strong>Import</strong>: Data → <strong>Import a file</strong>, pick the JSON. A picker shows the profiles it contains. Choose which ones, then pick a mode:</p>
+        <ul>
+          <li><strong>Replace all</strong>: deletes your current data and keeps only the selected imported profiles.</li>
+          <li><strong>Add</strong>: keeps your existing profiles and appends the imported ones with fresh ids (no conflicts, duplicates allowed).</li>
+        </ul>
+        <div class="callout">Profiles travel between devices via iCloud Drive, email, AirDrop, Google Drive, etc.</div>
         <h3>Demo and reset</h3>
         <p>At the bottom of the Data section, two actions let you start over:</p>
         <ul>
@@ -482,8 +531,19 @@
       dlgDeleteProfile: 'Supprimer « {name} » ?', dlgDeleteProfileMsg: 'Toutes les clés de ce profil seront perdues.',
       dlgDelete: 'Supprimer', dlgRename: 'Renommer le profil',
       dlgNewProfile: 'Nouveau profil', dlgNewProfilePH: 'Nom du profil', dlgCreate: 'Créer',
-      dlgImport: 'Importer ce fichier ?', dlgImportMsg: 'Toutes les données actuelles seront remplacées.',
-      dlgImportBtn: 'Importer', dlgImportFailed: 'Import échoué',
+      dlgImportFailed: 'Import échoué',
+      exportSheetTitle: 'Exporter les profils',
+      exportSheetSub: 'Sélectionnez les profils à inclure dans le fichier JSON.',
+      importSheetTitle: 'Importer les profils',
+      importSheetSub: 'Sélectionnez les profils du fichier à importer.',
+      selectAll: 'Tout sélectionner',
+      deselectAll: 'Tout désélectionner',
+      importModeLabel: 'Mode',
+      importModeReplace: 'Tout remplacer',
+      importModeAdd: 'Ajouter',
+      importModeReplaceHint: 'Supprime vos données actuelles et les remplace par les profils sélectionnés.',
+      importModeAddHint: 'Ajoute les profils sélectionnés à côté de vos profils existants (nouveaux identifiants, sans conflit).',
+      exportBtn: 'Exporter', importBtn: 'Importer',
       guideGot: 'Compris',
       demoRowTitle: 'Charger les données de démo',
       demoRowSub: 'Remplacer par un exemple de répartition',
@@ -515,12 +575,13 @@
         <h3>5. Langue et devise</h3>
         <p>La langue est détectée automatiquement (English, Français, Nederlands — français par défaut si non supportée). Changez-la via Données → Langue. La devise est par profil — touchez le symbole à côté du montant.</p>
         <h3>Exporter / Importer</h3>
-        <ol>
-          <li>Données → <strong>Exporter mes profils</strong> → un fichier <code>repartition-YYYY-MM-DD.json</code> est téléchargé</li>
-          <li>Envoyez-le vers un autre appareil (iCloud Drive, email, AirDrop)</li>
-          <li>Sur l'autre appareil, Données → <strong>Importer un fichier</strong> → choisissez le JSON</li>
-        </ol>
-        <div class="callout">⚠️ L'import <strong>remplace</strong> toutes les données actuelles. Exportez d'abord pour les conserver.</div>
+        <p><strong>Exporter</strong> : Données → <strong>Exporter mes profils</strong> ouvre un sélecteur où vous cochez les profils à inclure (tous par défaut). Confirmez pour télécharger un fichier <code>breakdown-YYYY-MM-DD.json</code>. Utile pour sauvegarder un seul profil ou en partager un avec un collègue sans exposer les autres.</p>
+        <p><strong>Importer</strong> : Données → <strong>Importer un fichier</strong>, choisissez le JSON. Un sélecteur affiche les profils qu'il contient. Cochez ceux à importer, puis choisissez un mode :</p>
+        <ul>
+          <li><strong>Tout remplacer</strong> : supprime vos données actuelles et ne garde que les profils sélectionnés.</li>
+          <li><strong>Ajouter</strong> : conserve vos profils existants et ajoute les importés avec de nouveaux identifiants (aucun conflit, doublons autorisés).</li>
+        </ul>
+        <div class="callout">Les profils voyagent entre appareils via iCloud Drive, email, AirDrop, Google Drive, etc.</div>
         <h3>Démo et réinitialisation</h3>
         <p>En bas de la section Données, deux actions pour repartir d'une base propre :</p>
         <ul>
@@ -561,8 +622,19 @@
       dlgDeleteProfile: '"{name}" verwijderen?', dlgDeleteProfileMsg: 'Alle sleutels van dit profiel gaan verloren.',
       dlgDelete: 'Verwijderen', dlgRename: 'Profiel hernoemen',
       dlgNewProfile: 'Nieuw profiel', dlgNewProfilePH: 'Profielnaam', dlgCreate: 'Aanmaken',
-      dlgImport: 'Dit bestand importeren?', dlgImportMsg: 'Alle huidige gegevens worden vervangen.',
-      dlgImportBtn: 'Importeren', dlgImportFailed: 'Import mislukt',
+      dlgImportFailed: 'Import mislukt',
+      exportSheetTitle: 'Profielen exporteren',
+      exportSheetSub: 'Selecteer de profielen die in het JSON-bestand komen.',
+      importSheetTitle: 'Profielen importeren',
+      importSheetSub: 'Selecteer welke profielen uit het bestand te importeren.',
+      selectAll: 'Alles selecteren',
+      deselectAll: 'Alles deselecteren',
+      importModeLabel: 'Modus',
+      importModeReplace: 'Alles vervangen',
+      importModeAdd: 'Toevoegen',
+      importModeReplaceHint: 'Verwijdert je huidige gegevens en vervangt ze door de geselecteerde profielen.',
+      importModeAddHint: 'Voegt de geselecteerde profielen toe naast je bestaande profielen (nieuwe ids, geen conflicten).',
+      exportBtn: 'Exporteren', importBtn: 'Importeren',
       guideGot: 'Begrepen',
       demoRowTitle: 'Demo gegevens laden',
       demoRowSub: 'Vervangen door een voorbeeldverdeling',
@@ -594,12 +666,13 @@
         <h3>5. Taal en valuta</h3>
         <p>Taal wordt automatisch gedetecteerd (English, Français, Nederlands — Frans als standaard bij niet-ondersteunde talen). Wijzig via Gegevens → Taal. Valuta is per profiel — tik op het symbool naast het bedrag.</p>
         <h3>Exporteren / Importeren</h3>
-        <ol>
-          <li>Gegevens → <strong>Mijn profielen exporteren</strong> → bestand <code>repartition-JJJJ-MM-DD.json</code> wordt gedownload</li>
-          <li>Stuur het naar een ander apparaat (iCloud Drive, e-mail, AirDrop)</li>
-          <li>Op het andere apparaat, Gegevens → <strong>Een bestand importeren</strong> → kies het JSON</li>
-        </ol>
-        <div class="callout">⚠️ Importeren <strong>vervangt</strong> alle huidige gegevens. Exporteer eerst om ze te behouden.</div>
+        <p><strong>Exporteren</strong>: Gegevens → <strong>Mijn profielen exporteren</strong> opent een kiezer waar je aanvinkt welke profielen je wilt opnemen (alle standaard). Bevestig om een bestand <code>breakdown-JJJJ-MM-DD.json</code> te downloaden. Handig om één profiel te back-uppen of te delen met een collega zonder de andere bloot te geven.</p>
+        <p><strong>Importeren</strong>: Gegevens → <strong>Een bestand importeren</strong>, kies het JSON. Een kiezer toont de profielen erin. Vink aan welke te importeren en kies een modus:</p>
+        <ul>
+          <li><strong>Alles vervangen</strong>: verwijdert je huidige gegevens en houdt alleen de geselecteerde geïmporteerde profielen.</li>
+          <li><strong>Toevoegen</strong>: behoudt je bestaande profielen en voegt de geïmporteerde toe met nieuwe ids (geen conflicten, duplicaten toegestaan).</li>
+        </ul>
+        <div class="callout">Profielen reizen tussen apparaten via iCloud Drive, e-mail, AirDrop, Google Drive, enz.</div>
         <h3>Demo en resetten</h3>
         <p>Onderaan de sectie Gegevens laten twee acties je opnieuw beginnen:</p>
         <ul>
@@ -1617,16 +1690,90 @@
   }
   $('#langRow').addEventListener('click', () => { renderLangList(); openSheet('langSheet'); });
 
-  // ============ Data actions ============
+  // ============ Export / Import (with selection) ============
+  const exportSelection = new Set();
+  const importSelection = new Set();
+  let importedState = null;
+  let importMode = 'replace';
+
+  function renderProfilePicker(listEl, profiles, selection, onToggle) {
+    listEl.innerHTML = '';
+    Object.entries(profiles).forEach(([id, p]) => {
+      const row = document.createElement('div');
+      row.className = 'row';
+      const selected = selection.has(id);
+      row.innerHTML = `
+        <div class="row-main">
+          <div class="row-title">${esc(p.name)}</div>
+          <div class="row-sub">${p.keys.length} · ${fmt(p.amount || 0)} ${esc(curSymOf(p.currency || 'EUR'))}</div>
+        </div>
+        <span class="checkbox ${selected ? 'checked' : ''}"></span>`;
+      row.addEventListener('click', () => {
+        if (selection.has(id)) selection.delete(id); else selection.add(id);
+        onToggle();
+      });
+      listEl.appendChild(row);
+    });
+  }
+
+  function updateExportUI() {
+    renderProfilePicker($('#exportList'), state.profiles, exportSelection, updateExportUI);
+    const total = Object.keys(state.profiles).length;
+    const allSelected = exportSelection.size === total;
+    $('#exportSelectAll').textContent = allSelected ? t('deselectAll') : t('selectAll');
+    const btn = $('#exportConfirm');
+    btn.textContent = t('exportBtn');
+    btn.disabled = exportSelection.size === 0;
+    btn.style.opacity = exportSelection.size === 0 ? '0.5' : '';
+  }
+
+  function updateImportUI() {
+    if (!importedState) return;
+    renderProfilePicker($('#importList'), importedState.profiles, importSelection, updateImportUI);
+    const total = Object.keys(importedState.profiles).length;
+    const allSelected = importSelection.size === total;
+    $('#importSelectAll').textContent = allSelected ? t('deselectAll') : t('selectAll');
+    $('#importModeReplace').classList.toggle('active', importMode === 'replace');
+    $('#importModeAdd').classList.toggle('active', importMode === 'add');
+    $('#importModeHint').textContent = importMode === 'replace' ? t('importModeReplaceHint') : t('importModeAddHint');
+    const btn = $('#importConfirm');
+    btn.textContent = t('importBtn');
+    btn.disabled = importSelection.size === 0;
+    btn.style.opacity = importSelection.size === 0 ? '0.5' : '';
+  }
+
   $('#exportRow').addEventListener('click', () => {
-    const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+    exportSelection.clear();
+    Object.keys(state.profiles).forEach(id => exportSelection.add(id));
+    $('#exportSheetTitle').textContent = t('exportSheetTitle');
+    $('#exportSheetSub').textContent = t('exportSheetSub');
+    updateExportUI();
+    openSheet('exportSheet');
+  });
+
+  $('#exportSelectAll').addEventListener('click', () => {
+    const total = Object.keys(state.profiles).length;
+    if (exportSelection.size === total) exportSelection.clear();
+    else Object.keys(state.profiles).forEach(id => exportSelection.add(id));
+    updateExportUI();
+  });
+
+  $('#exportConfirm').addEventListener('click', () => {
+    if (exportSelection.size === 0) return;
+    const profiles = {};
+    exportSelection.forEach(id => { if (state.profiles[id]) profiles[id] = state.profiles[id]; });
+    const firstId = [...exportSelection][0];
+    const payload = { v: 6, lang: state.lang, currentId: firstId, profiles };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = `breakdown-${new Date().toISOString().slice(0,10)}.json`;
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
+    closeSheet('exportSheet');
   });
+
   $('#importRow').addEventListener('click', () => $('#importFile').click());
   $('#importFile').addEventListener('change', async e => {
     const f = e.target.files[0]; e.target.value = '';
@@ -1635,20 +1782,58 @@
     r.onload = async () => {
       try {
         const s = migrate(r.result);
-        if (!s || !s.profiles) throw new Error('invalid');
-        const ok = await dialog({
-          title: t('dlgImport'), message: t('dlgImportMsg'),
-          okText: t('dlgImportBtn'), okStyle: 'danger primary',
-        });
-        if (!ok) return;
-        state = s;
-        if (!state.lang || !T[state.lang]) state.lang = detectLang();
-        save(); applyStaticTexts(); renderAll();
+        if (!s || !s.profiles || !Object.keys(s.profiles).length) throw new Error('invalid');
+        importedState = s;
+        importSelection.clear();
+        Object.keys(s.profiles).forEach(id => importSelection.add(id));
+        importMode = 'replace';
+        $('#importSheetTitle').textContent = t('importSheetTitle');
+        $('#importSheetSub').textContent = t('importSheetSub');
+        $('#importModeLabel').textContent = t('importModeLabel');
+        $('#importModeReplace').textContent = t('importModeReplace');
+        $('#importModeAdd').textContent = t('importModeAdd');
+        updateImportUI();
+        openSheet('importSheet');
       } catch (err) {
         await dialog({ title: t('dlgImportFailed'), message: err.message || '', showCancel: false });
       }
     };
     r.readAsText(f);
+  });
+
+  $('#importSelectAll').addEventListener('click', () => {
+    if (!importedState) return;
+    const total = Object.keys(importedState.profiles).length;
+    if (importSelection.size === total) importSelection.clear();
+    else Object.keys(importedState.profiles).forEach(id => importSelection.add(id));
+    updateImportUI();
+  });
+  $('#importModeReplace').addEventListener('click', () => { importMode = 'replace'; updateImportUI(); });
+  $('#importModeAdd').addEventListener('click',     () => { importMode = 'add';     updateImportUI(); });
+
+  $('#importConfirm').addEventListener('click', () => {
+    if (!importedState || importSelection.size === 0) return;
+    if (importMode === 'replace') {
+      const profiles = {};
+      importSelection.forEach(id => { if (importedState.profiles[id]) profiles[id] = importedState.profiles[id]; });
+      const firstId = [...importSelection][0];
+      state = {
+        v: 6,
+        lang: importedState.lang && T[importedState.lang] ? importedState.lang : state.lang,
+        currentId: firstId,
+        profiles,
+      };
+    } else {
+      importSelection.forEach(id => {
+        const p = importedState.profiles[id];
+        if (!p) return;
+        const newId = 'p_' + uid();
+        state.profiles[newId] = JSON.parse(JSON.stringify(p));
+      });
+    }
+    importedState = null;
+    save(); applyStaticTexts(); renderAll();
+    closeSheet('importSheet');
   });
 
   $('#guideRow').addEventListener('click', () => openSheet('guideSheet'));
